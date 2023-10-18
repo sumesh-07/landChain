@@ -36,6 +36,7 @@ Blockchain''',
         const SizedBox(
           height: 20,
         ),
+        /*
         Row(
           children: <Widget>[
             // button
@@ -60,7 +61,7 @@ Blockchain''',
                       borderRadius: BorderRadius.circular(8))),
             ),
             //
-            const SizedBox(width: 40),
+           // const SizedBox(width: 40),
             GestureDetector(
               onTap: () {
                 launchUrl("https://youtu.be/0Coz_ivOaHs");
@@ -96,7 +97,7 @@ Blockchain''',
               ),
             ),
           ],
-        ),
+        ),*/
         const SizedBox(
           height: 100,
         )
