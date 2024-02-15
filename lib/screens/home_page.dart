@@ -44,7 +44,7 @@ class _home_pageState extends State<home_page> {
                 child: HeaderWidget(),
               ),
             ),
-             Padding(
+            Padding(
               padding: const EdgeInsets.only(left: 150.0, top: 0, right: 150),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -72,7 +72,7 @@ class _home_pageState extends State<home_page> {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                CustomAnimatedContainer('Contract Owner', () {
+                /*CustomAnimatedContainer('Contract Owner', () {
                   // Navigator.push(
                   //     context,
                   //     MaterialPageRoute(
@@ -83,7 +83,7 @@ class _home_pageState extends State<home_page> {
                     '/login',
                     arguments: "owner",
                   );
-                }),
+                }),*/
                 CustomAnimatedContainer('Land Inspector', () {
                   // Navigator.push(
                   //     context,
@@ -122,8 +122,6 @@ class _home_pageState extends State<home_page> {
     );
   }
 
-
-
   Widget _buildMobileLayout() {
     return Scaffold(
       body: SingleChildScrollView(
@@ -140,11 +138,12 @@ class _home_pageState extends State<home_page> {
             const SizedBox(
               height: 100,
             ),
-            CustomAnimatedContainer('Contract Owner', () {
+            /* CustomAnimatedContainer('Contract Owner', () {
               Navigator.of(context).pushNamed('/login', arguments: "owner");
-            }),
+            }),*/
             CustomAnimatedContainer('Land Inspector', () {
-              Navigator.of(context).pushNamed('/login', arguments: "LandInspector");
+              Navigator.of(context)
+                  .pushNamed('/login', arguments: "LandInspector");
             }),
             CustomAnimatedContainer('User', () {
               Navigator.of(context).pushNamed('/login', arguments: "UserLogin");

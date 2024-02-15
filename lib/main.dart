@@ -6,7 +6,21 @@ import 'package:url_strategy/url_strategy.dart';
 import 'constant/routes.dart';
 import 'providers/MetamaskProvider.dart';
 
-void main() {
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+      // paste the code copied
+      // from Firebase SDK below.
+      options: const FirebaseOptions(
+          apiKey: "AIzaSyDUKuPAQntLbQ_3mljqvOPsHSohS3yLTo0",
+          authDomain: "landregistration-8005c.firebaseapp.com",
+          projectId: "landregistration-8005c",
+          storageBucket: "landregistration-8005c.appspot.com",
+          messagingSenderId: "656175610859",
+          appId: "1:656175610859:web:0e44448bf2c80b2e42f7ae"));
   setPathUrlStrategy();
   runApp(const MyApp());
 }

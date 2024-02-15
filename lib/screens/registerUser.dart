@@ -12,11 +12,54 @@ import 'package:mapbox_search/mapbox_search.dart';
 import '../constant/utils.dart';
 import '../providers/MetamaskProvider.dart';
 
+import 'package:firebase_auth/firebase_auth.dart';
+
 class RegisterUser extends StatefulWidget {
   const RegisterUser({Key? key}) : super(key: key);
 
   @override
   _RegisterUserState createState() => _RegisterUserState();
+}
+
+class FirebaseAuthentication {
+  String phoneNumber = "";
+
+  sendOTP(String phoneNumber) async {
+    this.phoneNumber = phoneNumber;
+    FirebaseAuth auth = FirebaseAuth.instance;
+    ConfirmationResult result = await auth.signInWithPhoneNumber(
+      '+91$phoneNumber',
+    );
+    printMessage("OTP Sent to +91 $phoneNumber");
+    return result;
+  }
+
+  /*authenticate(ConfirmationResult confirmationResult, String otp) async {
+    UserCredential userCredential = await confirmationResult.confirm(otp);
+    userCredential.additionalUserInfo!.isNewUser
+        ? printMessage("Authentication Successful")
+        : printMessage("User already exists");
+  }*/
+  Future<bool> authenticate(
+      ConfirmationResult confirmationResult, String otp) async {
+    try {
+      UserCredential userCredential = await confirmationResult.confirm(otp);
+      bool isNewUser = userCredential.additionalUserInfo?.isNewUser ?? false;
+      if (isNewUser) {
+        printMessage("Authentication Successful");
+      } else {
+        printMessage("User already exists");
+      }
+      return true; // Return true if authentication is successful
+    } catch (e) {
+      print("Authentication failed: $e");
+      return false; // Return false if authentication fails
+    }
+  }
+
+  printMessage(String msg) {
+    debugPrint(msg);
+  }
 }
 
 class _RegisterUserState extends State<RegisterUser> {
@@ -137,6 +180,18 @@ class _RegisterUserState extends State<RegisterUser> {
       return false;
     }
     return false;
+  }
+
+  TextEditingController phoneNumber = TextEditingController();
+  TextEditingController otp = TextEditingController();
+  bool visible = false;
+  var temp;
+
+  @override
+  void dispose() {
+    phoneNumber.dispose();
+    otp.dispose();
+    super.dispose();
   }
 
   @override
@@ -359,6 +414,21 @@ class _RegisterUserState extends State<RegisterUser> {
                       ),
                     ),
                   ),
+                  Padding(
+                    padding: const EdgeInsets.all(10),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        inputTextField("Contact Number", phoneNumber, context),
+                        visible
+                            ? inputTextField("OTP", otp, context)
+                            : SizedBox(),
+                        !visible
+                            ? SendOTPButton("Send OTP")
+                            : SubmitOTPButton("Submit"),
+                      ],
+                    ),
+                  ),
                   isAdded
                       ? CustomButton('Contine to Login', () {
                           Navigator.pop(context);
@@ -432,4 +502,75 @@ class _RegisterUserState extends State<RegisterUser> {
       ),
     );
   }
+
+  Widget SendOTPButton(String text) => ElevatedButton(
+        onPressed: () async {
+          setState(() {
+            visible = !visible;
+          });
+          temp = await FirebaseAuthentication().sendOTP(phoneNumber.text);
+        },
+        child: Text(text),
+      );
+
+  /*Widget SubmitOTPButton(String text) => ElevatedButton(
+        onPressed: () => FirebaseAuthentication().authenticate(temp, otp.text),
+        child: Text(text),
+      );*/
+  bool otpAuthenticationSuccess = false;
+
+  Widget SubmitOTPButton(String text) => ElevatedButton(
+        onPressed: () async {
+          bool isAuthSuccess =
+              await FirebaseAuthentication().authenticate(temp, otp.text);
+          if (isAuthSuccess) {
+            setState(() {
+              otpAuthenticationSuccess = true;
+            });
+            showDialog(
+              context: context,
+              builder: (context) => AlertDialog(
+                title: Text('Authentication Success'),
+                content: Text('You have successfully authenticated.'),
+                actions: [
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    child: Text('OK'),
+                  ),
+                ],
+              ),
+            );
+          }
+        },
+        child: Text(text),
+      );
+
+  Widget inputTextField(String labelText,
+          TextEditingController textEditingController, BuildContext context) =>
+      Padding(
+        padding: EdgeInsets.all(10.00),
+        child: SizedBox(
+          width: MediaQuery.of(context).size.width / 1.5,
+          child: TextFormField(
+            obscureText: labelText == "OTP" ? true : false,
+            controller: textEditingController,
+            decoration: InputDecoration(
+              hintText: labelText,
+              hintStyle: TextStyle(color: Colors.blue),
+              filled: true,
+              fillColor: Colors.blue[100],
+              enabledBorder: OutlineInputBorder(
+                borderSide: BorderSide(color: Colors.transparent),
+                borderRadius: BorderRadius.circular(5.5),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderSide: BorderSide(color: Colors.transparent),
+                borderRadius: BorderRadius.circular(5.5),
+              ),
+            ),
+          ),
+        ),
+      );
 }
